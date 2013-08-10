@@ -181,4 +181,3 @@ Pong.prototype.onData = function (conn, data) {
 };
 
 actLoaded('pong', Pong);
-

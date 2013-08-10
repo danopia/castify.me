@@ -22,8 +22,7 @@ var receiver, channelHandler, name;
   });
 })();
 
-var acts = 'stream pong tetris scrabble webcam clock weather finance present beam cards books'.split(' ');
-
+// P2P
 var peer;
 $(function () {
   peer = new Peer({host: 'cast.danopia.net', port: 9000});
@@ -37,14 +36,12 @@ $(function () {
     });
   });
 });
-
 function broadcast (pkt) {
   for (var key in peer.connections)
     peer.connections[key].peerjs.send(pkt);
 };
 
-var activity;
-
+// Timing loop
 var lastStep = new Date();
 setInterval(function () {
   var now = new Date(), delta = now - lastStep;
@@ -54,6 +51,7 @@ setInterval(function () {
     activity.onStep(delta / 1000);
 }, 1/120);
 
+// Handle P2P clients
 $(function () {
   peer.on('connection', function(conn) {
     conn.on('open', function () {
@@ -64,8 +62,6 @@ $(function () {
           activity.onConnection(conn);
         else
           conn.send({type: 'launch', activity: activity.name});
-      } else {
-        conn.send({type: 'launch', activity: 'launcher', activities: acts});
       };
     });
     
@@ -74,14 +70,6 @@ $(function () {
         conn.send({type: 'pong', ts: data.ts});
       } else if (data.type === 'activity' && activity && 'onData' in activity) {
         activity.onData(conn, data);
-      } else if (data.type === 'activity' && !activity && data.cmd == 'launch' && 'activity' in data && acts.indexOf(data.activity) >= 0) {
-        if (activity && 'terminate' in activity) activity.terminate();
-        activity = null;
-        
-        getAct(data.activity, function (act) {
-          activity = new act(data);
-          activity.launch();
-        });
       } else {
         console.log('Unhandled client packet:', data);
       };
@@ -90,8 +78,6 @@ $(function () {
 });
 
 // Activity Loading
-/////////////////////
-
 window.activities = {};
 var cbs = {};
 function actLoaded (act, constr) {
@@ -111,4 +97,11 @@ function getAct (act, cb) {
     $('[data-script]').after($script);
   };
 };
+
+// Default to Launcher
+var activity, acts = 'stream pong tetris scrabble webcam clock weather finance present beam cards books'.split(' ');
+getAct('launcher', function (launcher) {
+  activity = new launcher(acts);
+  activity.launch();
+});
 
