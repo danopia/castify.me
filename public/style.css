@@ -1,0 +1,26 @@
+body { overflow: hidden; background: #fec353; font-family: Monda; font-size: 24px; }
+body, html { height: 100%; }
+#sects { position: absolute; top: 0; right: 0; bottom: 0; left: 50px; }
+section { position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: auto; margin: 16px; padding: 15px; background: #f2f2f2; border: 4px solid #000; text-align: center; }
+section h1 { -webkit-text-stroke: 2px black; color: #fec353; font-size: 96px; margin: -10px 0; }
+#leftbar { position: absolute; left: 0; width: 50px; top: 0; bottom: 0; }
+#leftbar>h1 { position: absolute; bottom: -90px; -webkit-transform-origin: -10px 0; -webkit-transform: rotate(-90deg); }
+#leftbar>#tv { -webkit-transform-origin: 100% 50%; -webkit-transform: rotate(-90deg); width: 500px; text-align: right; right: 15px; position: absolute; top: 0; }
+ul { list-style: none; padding: 0; }
+#tvid-form p { margin: 5px; font-size: 36px; }
+#tvid-form input { font-size: 36px; font-family: 'Source Code Pro', fixed; border: 2px solid #000; text-align: center; }
+/*#tvid-form button { font-size: 24px; }*/
+#loading { text-align: center; margin-top: -40px; position: relative; top: 50%; font-size: 62px; }
+#activity-list li { display: inline-block; margin: 8px 5px; }
+#activity-list button { height: 125px; }
+#tvid { font-family: 'Source Code Pro', fixed; }
+
+button { display: inline-block; cursor: hand; padding: 0; border: 0; background: none; position: relative; width: 200px; height: 75px; }
+button:after { display: block; position: absolute; bottom: 0; left: 0; right: 0; height: 25px; background: #ba903e; content: ''; z-index: 2; border-radius: 0 0 11px 11px; border: 4px solid #000; border-radius: 0 0 15px 15px; }
+button span { display: block; border: 4px solid #000; border-radius: 15px; text-decoration: none; color: #000; background: #ffc33c; font-size: 24px; padding: 10px 25px; bottom: 15px; left: 0; right: 0; z-index: 5; position: absolute; }
+button.tall span { border-radius: 0 0 15px 15px; padding: 0 25px; }
+button.tall>div { border: 4px solid #000; border-radius: 15px 15px 0 0; background: white; position: absolute; top: 0; right: 0; left: 0; bottom: 30px; }
+button:hover span { background: #ffe39c; }
+button:focus span { bottom: 0; background: #ffe39c; }
+button:active span, button.pressed span { bottom: 0; background: #ffc33c; }
+
