@@ -32,10 +32,3 @@ app.use(function(req, res, next){
 
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/public/index.html');
-});
-app.get('/receiver', function (req, res) {
-  res.sendfile(__dirname + '/public/receiver.html');
-});
-
