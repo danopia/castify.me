@@ -211,7 +211,21 @@ activities.pong.prototype.onStep = function (timeDelta) {
       this.ballDlt[0] = Math.cos(ang) * this.ballSpd;
       this.ballDlt[1] = Math.sin(ang) * this.ballSpd;
     } else {
+      this.inLobby = true;
       this.running = false;
+      
+      this.conns = {};
+      this.seats = [{label: 'red'}, {label: 'blue'}];
+      this.score = ['waiting', 'waiting'];
+      this.pos = [200, 200];
+      this.dlt = [0, 0];
+      this.ballPos = [200, 400];
+      this.ballSpd = 600;
+      
+      var ang = 30 * (Math.PI * 2) / 360;
+      this.ballDlt = [this.ballSpd * Math.cos(ang), this.ballSpd * Math.sin(ang)];
+      
+      broadcast({type: 'activity', cmd: 'lobby', seats: this.seats});
     };
   };
   
@@ -232,7 +246,21 @@ activities.pong.prototype.onStep = function (timeDelta) {
       this.ballDlt[0] = Math.cos(ang) * this.ballSpd * -1;
       this.ballDlt[1] = Math.sin(ang) * this.ballSpd;
     } else {
+      this.inLobby = true;
       this.running = false;
+      
+      this.conns = {};
+      this.seats = [{label: 'red'}, {label: 'blue'}];
+      this.score = ['waiting', 'waiting'];
+      this.pos = [200, 200];
+      this.dlt = [0, 0];
+      this.ballPos = [200, 400];
+      this.ballSpd = 600;
+      
+      var ang = 30 * (Math.PI * 2) / 360;
+      this.ballDlt = [this.ballSpd * Math.cos(ang), this.ballSpd * Math.sin(ang)];
+      
+      broadcast({type: 'activity', cmd: 'lobby', seats: this.seats});
     };
   };
   
@@ -257,12 +285,10 @@ activities.pong.prototype.invalidate = function () {
 };
 activities.pong.prototype.onConnection = function (conn) {
   conn.send({type: 'launch', activity: 'pong'});
-  
-  if (this.inLobby)
-    conn.send({type: 'activity', cmd: 'lobby', seats: this.seats});
+  conn.send({type: 'activity', cmd: 'lobby', seats: this.seats});
 };
 activities.pong.prototype.onData = function (conn, data) {
-  if (data.cmd == 'join' && this.inLobby && !this.seats[data.seat].peer && !this.conns[conn.getPeer()]) {
+  if (data.cmd == 'join' && !this.seats[data.seat].peer && !this.conns[conn.getPeer()]) {
     this.seats[data.seat].peer = conn.getPeer();
     this.conns[conn.getPeer()] = data.seat;
     this.score[data.seat] = 0;

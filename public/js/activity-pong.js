@@ -23,6 +23,8 @@ Pong.prototype.launch = function () {
 }
 
 Pong.prototype.open = function () {
+  if (this.$dom.is(":visible")) return;
+  
   $('#sects').append(this.$dom);
   this.$dom.css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
   
@@ -48,6 +50,8 @@ Pong.prototype.open = function () {
 };
 
 Pong.prototype.close = function () {
+  if (!this.$dom.is(":visible")) return;
+  
   this.$dom.animate({left: '-125%', right: '125%'}, function () {
     this.$dom.detach();
   }.bind(this));
@@ -57,6 +61,7 @@ Pong.prototype.close = function () {
 
 Pong.prototype.onData = function (data) {
   if (data.cmd == 'lobby') {
+    this.close();
     this.lobby.setSeats(data.seats);
     this.lobby.show();
   } else if (data.cmd == 'join') {
