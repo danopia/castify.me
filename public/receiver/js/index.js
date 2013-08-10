@@ -22,6 +22,8 @@ var receiver, channelHandler, name;
   });
 })();
 
+var acts = 'stream pong tetris scrabble webcam clock weather finance present beam cards books'.split(' ');
+
 var peer;
 $(function () {
   peer = new Peer({host: 'cast.danopia.net', port: 9000});
@@ -56,25 +58,27 @@ $(function () {
   peer.on('connection', function(conn) {
     conn.on('open', function () {
       conn.send({type: 'banner', name: name});
+      
+      if (activity) {
+        if ('onConnection' in activity)
+          activity.onConnection(conn);
+        else
+          conn.send({type: 'launch', activity: activity.name});
+      } else {
+        conn.send({type: 'launch', activity: 'launcher', activities: acts});
+      };
     });
-    
-    if (activity) {
-      if ('onConnection' in activity)
-        activity.onConnection(conn);
-      else
-        conn.send({type: 'launch', activity: activity.name});
-    };
     
     conn.on('data', function (data) {
       if (data.type === 'ping') {
         conn.send({type: 'pong', ts: data.ts});
-      } else if (data.type === 'launch') {
+      } else if (data.type === 'activity' && activity && 'onData' in activity) {
+        activity.onData(conn, data);
+      } else if (data.type === 'activity' && !activity && data.cmd == 'launch' && 'activity' in data) {
         if (data.activity in activities) {
           activity = new activities[data.activity]();
           activity.launch();
         };
-      } else if (data.type === 'activity' && activity && 'onData' in activity) {
-        activity.onData(conn, data);
       } else {
         console.log('Unhandled client packet:', data);
       };

@@ -72,7 +72,6 @@ function connectToTv (id) {
     setInterval(function () {
       tvconn.send({type: 'ping', ts: +new Date()});
     }, 10000);
-    showHome(true);
     
     $('#tv').show();
     $('#tvid').text(tvconn.peer);
@@ -88,8 +87,14 @@ var activity;
 function onTvData (data) {
   console.log('TV', '>>>', data);
   if (data.type == 'launch') {
+    if (activity) {
+      activity.close();
+      activity = null;
+    };
+    
     getAct(data.activity, function (act) {
       activity = new act(data);
+      activity.launch();
     });
   /*
     if (data.activity == 'pong') {
@@ -112,20 +117,7 @@ function onTvData (data) {
   };
 };
 
-function showHome (firstTime) {
-  $('#home').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
-};
-
 $(function () {
-  $('#activity-list').on('click', 'button', function (e) {
-    e.preventDefault();
-    var activity = $(e.currentTarget).data('activity');
-    tvconn.send({type: 'launch', activity: activity});
-    
-    $('#home').animate({left: '-125%', right: '125%'});
-    $('#loading').text('waiting...');
-  });
-  
   $('#stream-form').submit(function (e) {
     e.preventDefault();
     var src = $('#stream-form input').val();
@@ -148,7 +140,8 @@ function getAct (act, cb) {
     cb(activities[act]);
   } else {
     cbs[act] = cb;
-    $('[data-script]').after($('<script async>').attr('src', 'js/activity-' + act + '.js'));
+    var $script = $('<script async>').attr('src', 'js/activity-' + act + '.js');
+    $('[data-script]').after($script);
   };
 };
 
@@ -204,13 +197,7 @@ Lobby.prototype.hide = function () {
   }.bind(this));
 };
 
+/* cast_api.stopActivity(cv_activity.activityId, function(){
+     cv_activity = null;;
+   }); */
 
-/*
-$killSwitch.on('click', function() {
-  cast_api.stopActivity(cv_activity.activityId, function(){
-    cv_activity = null;
-  
-    $killSwitch.prop('disabled', true);
-  });
-});
-*/
