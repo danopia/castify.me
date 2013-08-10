@@ -85,9 +85,6 @@ function connectToTv (id) {
   };
 };
 
-// Activity Loading
-/////////////////////
-
 var activity;
 function onTvData (data) {
   console.log('TV', '>>>', data);
@@ -119,6 +116,9 @@ $(function () {
     tvconn.send({type: 'activity', cmd: 'queueAdd', item: {src: src}});
   });
 });
+
+// Activity Loading
+/////////////////////
 
 window.activities = {};
 var cbs = {};
