@@ -14,9 +14,7 @@ actLoaded('launcher', {
     };
     
     $ul.on('click', 'button', this.onClick);
-  },
-
-  launch: function () {
+    
     $('#sects').append(this.$dom);
     this.$dom.css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
   },

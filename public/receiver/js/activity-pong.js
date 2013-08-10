@@ -24,9 +24,7 @@ actLoaded('pong', {
     this.$scoreR = $('<div class="pong-scoreR">waiting</div>');
     this.$divider = $('<div class="pong-divider">');
     this.$dom.append(this.$paddleL, this.$paddleR, this.$scoreL, this.$scoreR, this.$divider);
-  },
-
-  launch: function () {
+    
     broadcast({type: 'launch', activity: 'pong'});
     broadcast({type: 'activity', cmd: 'lobby', seats: this.seats});
     $('body').append(this.$dom);

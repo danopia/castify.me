@@ -94,7 +94,6 @@ function onTvData (data) {
     
     getAct(data.activity, function (act) {
       activity = new act(data);
-      activity.launch();
     });
   } else if (data.type == 'activity' && activity && 'onData' in activity) {
     activity.onData(data);

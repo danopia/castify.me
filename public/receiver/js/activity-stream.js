@@ -10,9 +10,7 @@ actLoaded('stream', {
     this.$header = $('<header>');
     this.$title = $('<h2>').appendTo(this.$header);
     this.$dom.append(this.$vid, this.$header);
-  },
-  
-  launch: function () {
+    
     broadcast({type: 'launch', activity: 'stream'});
     broadcast({type: 'activity', cmd: 'queue', items: this.queue});
     broadcast({type: 'activity', cmd: 'state'});

@@ -13,15 +13,6 @@ actLoaded('pong', {
     this.$dom.append($h1, $ul);
   },
 
-  launch: function () {
-    if ($('#home').css('left') == '0px') {
-      $('#home').animate({left: '-125%', right: '125%'});
-      $('#loading').text('waiting...');
-    };
-    
-    this.lobby.show();
-  },
-
   open: function () {
     if (this.$dom.is(":visible")) return;
     

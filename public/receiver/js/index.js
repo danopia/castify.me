@@ -37,8 +37,9 @@ $(function () {
   });
 });
 function broadcast (pkt) {
-  for (var key in peer.connections)
-    peer.connections[key].peerjs.send(pkt);
+  if (peer)
+    for (var key in peer.connections)
+      peer.connections[key].peerjs.send(pkt);
 };
 
 // Timing loop
@@ -102,6 +103,5 @@ function getAct (act, cb) {
 var activity, acts = 'stream pong tetris scrabble webcam clock weather finance present beam cards books'.split(' ');
 getAct('launcher', function (launcher) {
   activity = new launcher(acts);
-  activity.launch();
 });
 
