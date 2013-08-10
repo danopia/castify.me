@@ -174,14 +174,14 @@
     if (this.seats[0]) {
       this.pos[0] += this.dlt[0] * timeDelta;
       if (this.pos[0] < 100) this.pos[0] = 100;
-      if (this.pos[0] > 720 - 100) this.pos[0] = 720 - 100;
+      if (this.pos[0] > $('body').height() - 100) this.pos[0] = $('body').height() - 100;
       this.$paddleL.css('top', this.pos[0]);
     };
     
     if (this.seats[1]) {
       this.pos[1] += this.dlt[1] * timeDelta;
       if (this.pos[1] < 100) this.pos[1] = 100;
-      if (this.pos[1] > 720 - 100) this.pos[1] = 720 - 100;
+      if (this.pos[1] > $('body').height() - 100) this.pos[1] = $('body').height() - 100;
       this.$paddleR.css('top', this.pos[1]);
     };
     
@@ -193,14 +193,47 @@
     this.ballPos[0] += this.ballDlt[0] * timeDelta;
     this.ballPos[1] += this.ballDlt[1] * timeDelta;
     
-    if (this.ballPos[0] > 1280 - 75 - 50) { this.ballDlt[0] *= -1; this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta); }
-    if (this.ballPos[0] < 75)             { this.ballDlt[0] *= -1; this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta); }
-    if (this.ballPos[1] > 720 - 50)       { this.ballDlt[1] *= -1; this.ballPos[1] += (2 * this.ballDlt[1] * timeDelta); }
+    if (this.ballPos[0] < 75) {
+      if (!this.seats[0]) {
+        this.ballDlt[0] *= -1;
+        this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
+      } else if (this.pos[0] + 100 > this.ballPos[1] + 25 && this.pos[0] - 100 < this.ballPos[1] + 25) {
+        this.ballDlt[0] *= -1;
+        this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
+        
+        this.ballSpd = Math.sqrt(Math.pow(this.ballDlt[0], 2) + Math.pow(this.ballDlt[1], 2));
+        // var ang = Math.atan2(this.ballDlt[1], this.ballDlt[0]);
+        var pos = ((this.ballPos[1] + 25) - (this.pos[0] - 100));
+        var ang = (pos / 300 + (1/6)) * Math.PI - (Math.PI /2)
+        console.log(pos, ang);
+        
+        this.ballDlt[0] = Math.cos(ang) * this.ballSpd;
+        this.ballDlt[1] = Math.sin(ang) * this.ballSpd;
+      } else {
+        this.running = false;
+      };
+    };
+    
+    if (this.ballPos[0] > $('body').width() - 75 - 50) {
+      if (!this.seats[1]) {
+        this.ballDlt[0] *= -1;
+        this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
+      } else if (this.pos[1] + 100 > this.ballPos[1] + 25 && this.pos[1] - 100 < this.ballPos[1] + 25) {
+        this.ballDlt[0] *= -1;
+        this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
+      } else {
+        this.running = false;
+      };
+    };
+    
+    if (this.ballPos[1] > $('body').height() - 50)       { this.ballDlt[1] *= -1; this.ballPos[1] += (2 * this.ballDlt[1] * timeDelta); }
     if (this.ballPos[1] < 0)              { this.ballDlt[1] *= -1; this.ballPos[1] += (2 * this.ballDlt[1] * timeDelta); }
     
     this.$ball.css({left: this.ballPos[0], top: this.ballPos[1]});
   };
   activities.pong.prototype.start = function () {
+    if (this.running) return;
+    
     this.inLobby = false;
     this.$dom.append(this.$ball);
     
@@ -232,7 +265,7 @@
       
       broadcast({type: 'activity', cmd: 'lobby', seats: this.seats});
       
-      if (this.seats[0] && this.seats[1])
+      //if (this.seats[0] && this.seats[1])
         this.start();
     } else if (data.cmd == 'delta' && conn.getPeer() in this.conns) {
       var seat = this.conns[conn.getPeer()];
@@ -245,7 +278,7 @@
 </script>
 
 <style>
-  body { font-family: Raleway, sans-serif; background: #111; color: #ccc; }
+  body { font-family: Raleway, sans-serif; background: #111; color: #ccc; margin: 0; padding: 0; overflow: hidden; }
   
   section { display: none; position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
   section.splash { display: block; }
@@ -288,12 +321,6 @@
     </hgroup>
   </section>
   <h3 class="tvid">tv id <span></span></h3>
-  
-  <!--
-  <div id="p1" class="paddle" style="left:  50px; background: red; "></div>
-  <div id="p2" class="paddle" style="right: 50px; background: blue;"></div>
-  <div id="b1" class="ball"   style="left: 200px; top: 100px;"></div>
-  -->
   
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
