@@ -1,0 +1,278 @@
+<html data-cast-api-enabled="true">
+<head>
+	<title>Castify Remote</title>
+	<!--link rel="stylesheet" type="text/css" href="css/sender.css" /-->
+	
+  <link href='http://fonts.googleapis.com/css?family=Monda:400,700|Source+Code+Pro' rel='stylesheet' type='text/css'>
+	<style>
+    body { overflow: hidden; background: #fec353; font-family: Monda; font-size: 24px; }
+    section { position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: auto; margin: 16px; padding: 15px; background: #f2f2f2; border: 4px solid #000; text-align: center; }
+    h1 { -webkit-text-stroke: 2px black; color: #fec353; font-size: 96px; margin: -10px 0; }
+    ul { list-style: none; padding: 0; }
+    #tvid-form p { margin: 5px; font-size: 36px; }
+    #tvid-form input { font-size: 36px; font-family: 'Source Code Pro', fixed; border: 2px solid #000; text-align: center; }
+    /*#tvid-form button { font-size: 24px; }*/
+    #loading { text-align: center; margin-top: -40px; position: relative; top: 50%; font-size: 62px; }
+    #activity-list li { display: inline-block; margin: 5px; }
+    #activity-list button { height: 125px; }
+
+    button { display: inline-block; cursor: hand; padding: 0; border: 0; background: none; position: relative; width: 200px; height: 75px; }
+    button:after { display: block; position: absolute; bottom: 0; left: 0; right: 0; height: 25px; background: #ba903e; content: ''; z-index: 2; border-radius: 0 0 11px 11px; border: 4px solid #000; border-radius: 0 0 15px 15px; }
+    button span { display: block; border: 4px solid #000; border-radius: 15px; text-decoration: none; color: #000; background: #ffc33c; font-size: 24px; padding: 10px 25px; bottom: 15px; left: 0; right: 0; z-index: 5; position: absolute; }
+    button.tall span { border-radius: 0 0 15px 15px; padding: 0 25px; }
+    button.tall>div { border: 4px solid #000; border-radius: 15px 15px 0 0; background: white; position: absolute; top: 0; right: 0; left: 0; bottom: 30px; }
+    button:hover span { background: #ffe39c; }
+    button:focus span { bottom: 0; background: #ffe39c; }
+    button:active span, button.pressed span { bottom: 0; background: #ffc33c; }
+	</style>
+</head>
+<body>
+  <div id="loading">loading...</div>
+  
+	<section id="connect">
+	  <h1>castify.me</h1>
+		
+		<ul id="receiver-list"></ul>
+		
+		<form id="tvid-form">
+		  <p><label>tv id:</label></p>
+		  <p><input type="text" size="8" maxlength="8"></p>
+		  <p><button><span>connect</span></button></p>
+		</form>
+	</section>
+	
+	<section id="home" style="display: none;">
+	  <h1>activities</h1>
+	  
+	  <ul id="activity-list">
+	    <li><button class="tall" data-activity="stream"><div></div><span>stream</span></button></li>
+	    <li><button class="tall" data-activity="pong"><div></div><span>pong</span></button></li>
+	    <li><button class="tall" data-activity="tetris"><div></div><span>tetris</span></button></li>
+	    <li><button class="tall" data-activity="scrabble"><div></div><span>scrabble</span></button></li>
+	    <li><button class="tall" data-activity="webcam"><div></div><span>webcam</span></button></li>
+	    <li><button class="tall" data-activity="clock"><div></div><span>clock</span></button></li>
+	    <li><button class="tall" data-activity="weather"><div></div><span>weather</span></button></li>
+	    <li><button class="tall" data-activity="finance"><div></div><span>finance</span></button></li>
+	    <li><button class="tall" data-activity="present"><div></div><span>present</span></button></li>
+	    <li><button class="tall" data-activity="beam"><div></div><span>beam</span></button></li>
+	    <li><button class="tall" data-activity="cards"><div></div><span>cards</span></button></li>
+	    <li><button class="tall" data-activity="books"><div></div><span>books</span></button></li>
+	  </ul>
+	</section>
+	
+	<section id="act-stream" style="display: none;">
+	  <h1>stream video</h1>
+	  
+	  <video></video>
+	  
+		<form id="stream-form">
+		  <p><label>url:</label></p>
+		  <p><input type="text"></p>
+		  <p><button><span>play</span></button></p>
+		</form>
+	</section>
+	
+	<section id="act-pong-lobby" style="display: none;">
+	  <h1>castify pong</h1>
+	  
+	  <p><button data-idx="0"><span>play red</span></button></p>
+	  <p><button data-idx="1"><span>play blue</span></button></p>
+	</section>
+	
+	<section id="act-pong-game" style="display: none;">
+	  <h1>play pong</h1>
+	  
+	  <p><button data-key="w"><span>up (w)</span></button></p>
+	  <p><button data-key="s"><span>down (s)</span></button></p>
+	</section>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-43066282-1', 'castify.me');
+    ga('send', 'pageview');
+  </script>
+</body>
+
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="http://cdn.peerjs.com/0/peer.js"></script>
+
+<script>
+  (function () {
+	  var cast_api, cv_activity, receiverList;
+
+	  window.addEventListener('message', function(event) {
+		  if (event.source === window && event.data && event.data.source === 'CastApi' && event.data.event === 'Hello' && !cast_api) {
+			  cast_api = new cast.Api();
+			  cast_api.addReceiverListener('f2889f47-f852-45c0-bed0-010cbf577c0b', onReceiverList);
+		  };
+	  });
+
+	  onReceiverList = function(list) {
+		  receiverList = list;
+		  $('#receiver-list').empty();
+		  list.forEach(function(receiver) {
+			  $listItem = $('<li><a href="#" data-id="' + receiver.id + '">' + receiver.name + '</a></li>');
+			  $listItem.on('click', receiverClicked);
+			  $('#receiver-list').append($listItem);
+		  });
+	  };
+
+	  receiverClicked = function(e) {
+		  e.preventDefault();
+
+		  var $target = $(e.target);
+	    for (id in receiverList) {
+	      if (receiverList[id].id === $target.data('id'))
+	        doLaunch(receiverList[id]);
+	    };
+	  };
+
+    var mReceiver;
+	  doLaunch = function(receiver) {
+	    mReceiver = receiver;
+		  var request = new cast.LaunchRequest('f2889f47-f852-45c0-bed0-010cbf577c0b', receiver);
+		  cast_api.launch(request, onLaunch);
+      $('#connect').animate({left: '-100%', right: '100%'});
+      $('#loading').text('launching...');
+	  };
+	  
+	  onLaunch = function(activity) {
+		  if (activity.status === 'running') {
+			  cv_activity = activity;
+			  cast_api.sendMessage(cv_activity.activityId, 'castify', {name: mReceiver.name});
+			  cast_api.addMessageListener(cv_activity.activityId, 'castify', function (msg) {
+			    if (msg && 'id' in msg)
+			      connectToTv(msg.id);
+			  });
+			};
+	  };
+	})();
+	
+	$('#tvid-form').submit(function (e) {
+	  e.preventDefault();
+	  connectToTv($('#tvid-form input').val());
+	});
+	$(function () {
+	  $('#tvid-form input').focus();
+	});
+	
+  var tvconn, peer = new Peer({host: 'cast.danopia.net', port: 9000});
+  
+	function connectToTv (id) {
+	  if (tvconn) return false;
+	  
+    tvconn = peer.connect(id);
+    tvconn.on('data', onTvData);
+    tvconn.on('open', function () {
+      setInterval(function () {
+        tvconn.send({type: 'ping', ts: +new Date()});
+      }, 10000);
+      showHome(true);
+    });
+    
+    if ($('#connect').css('left') == '0px') {
+      $('#connect').animate({left: '-100%', right: '100%'});
+      $('#loading').text('connecting...');
+    };
+	};
+	
+	function onTvData (data) {
+	  if (data.type == 'launch') {
+	    if (data.activity == 'pong') {
+        startPong();
+	    } else if (data.activity == 'stream') {
+        $('#act-stream').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
+	    } else {
+	      console.log('Launching unknown activity', data.activity);
+	    };
+	  } else if (data.cmd == 'state' && data.item) {
+		  $('#act-stream video')[0].src = data.item.src;
+	  } else if (data.type == 'pong' && data.ts) {
+	    console.log('Ping:', new Date() - data.ts + 'ms');
+	  } else {
+		  console.log('Unhandled TV packet:', data);
+		};
+	};
+	
+	function showHome (firstTime) {
+    $('#home').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
+	};
+	
+	function startPong () {
+    if ($('#home').css('left') == '0px') {
+      $('#home').animate({left: '-100%', right: '100%'});
+      $('#loading').text('waiting...');
+    };
+    
+    $('#act-pong-lobby').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
+    
+    $('#act-pong-lobby [data-idx=0]').click(function (e) {
+      tvconn.send({type: 'activity', cmd: 'join', player: 0});
+      playPong();
+    });
+    $('#act-pong-lobby [data-idx=1]').click(function (e) {
+      tvconn.send({type: 'activity', cmd: 'join', player: 1});
+      playPong();
+    });
+	}
+	
+	function playPong () {
+    $('#act-pong-lobby').animate({left: '-100%', right: '100%'});
+    $('#act-pong-game').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
+    
+		$('body').keydown(function (e) {
+		  if (e.keyCode == 87) {
+		    $('[data-key=w]').addClass('pressed');
+        tvconn.send({type: 'activity', cmd: 'delta', delta: -1000});
+		  } else if (e.keyCode == 83) {
+		    $('[data-key=s]').addClass('pressed');
+        tvconn.send({type: 'activity', cmd: 'delta', delta: 1000});
+		  };
+		});
+		
+		$('body').keyup(function (e) {
+		  if (e.keyCode == 87) {
+		    $('[data-key=w]').removeClass('pressed');
+        tvconn.send({type: 'activity', cmd: 'delta', delta: 0});
+		  } else if (e.keyCode == 83) {
+		    $('[data-key=s]').removeClass('pressed');
+        tvconn.send({type: 'activity', cmd: 'delta', delta: 0});
+		  }
+	  });
+	};
+	
+	$(function () {
+	  $('#activity-list').on('click', 'button', function (e) {
+	    e.preventDefault();
+		  var activity = $(e.currentTarget).data('activity');
+      tvconn.send({type: 'launch', activity: activity});
+      
+      $('#home').animate({left: '-100%', right: '100%'});
+      $('#loading').text('waiting...');
+	  });
+	  
+	  $('#stream-form').submit(function (e) {
+	    e.preventDefault();
+		  var src = $('#stream-form input').val();
+		  if (!src) return false;
+		  $('#stream-form input').val('');
+      tvconn.send({type: 'activity', cmd: 'queueAdd', item: {src: src}});
+		});
+	});
+	
+
+/*
+	$killSwitch.on('click', function() {
+		cast_api.stopActivity(cv_activity.activityId, function(){
+			cv_activity = null;
+		
+			$killSwitch.prop('disabled', true);
+		});
+	});*/
+</script>
+</html>
+
