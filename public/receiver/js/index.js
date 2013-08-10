@@ -201,7 +201,7 @@ activities.pong.prototype.onStep = function (timeDelta) {
       this.ballSpd = Math.sqrt(Math.pow(this.ballDlt[0], 2) + Math.pow(this.ballDlt[1], 2));
       // var ang = Math.atan2(this.ballDlt[1], this.ballDlt[0]);
       var pos = ((this.ballPos[1] + 25) - (this.pos[0] - 100));
-      var ang = (pos / 300 + (1/6)) * Math.PI - (Math.PI /2)
+      var ang = (pos / 300 + (1/6)) * Math.PI - (Math.PI /2);
       console.log(pos, ang);
       
       this.ballDlt[0] = Math.cos(ang) * this.ballSpd;
@@ -218,6 +218,15 @@ activities.pong.prototype.onStep = function (timeDelta) {
     } else if (this.pos[1] + 100 > this.ballPos[1] + 25 && this.pos[1] - 100 < this.ballPos[1] + 25) {
       this.ballDlt[0] *= -1;
       this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
+      
+      this.ballSpd = Math.sqrt(Math.pow(this.ballDlt[0], 2) + Math.pow(this.ballDlt[1], 2));
+      // var ang = Math.atan2(this.ballDlt[1], this.ballDlt[0]);
+      var pos = ((this.ballPos[1] + 25) - (this.pos[1] - 100));
+      var ang = (pos / 300 + (1/6)) * Math.PI - (Math.PI /2);
+      console.log(pos, ang);
+      
+      this.ballDlt[0] = Math.cos(ang) * this.ballSpd * -1;
+      this.ballDlt[1] = Math.sin(ang) * this.ballSpd;
     } else {
       this.running = false;
     };
