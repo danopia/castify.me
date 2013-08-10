@@ -20,6 +20,7 @@
         name = event.message.name;
         $('.tvname span').text(name);
         $('.tvname').show().animate({opacity: 1});
+        broadcast({type: 'banner', name: name});
       } else
         console.log('Unhandled message:', event.message);
     });

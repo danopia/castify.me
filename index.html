@@ -6,8 +6,12 @@
   <link href='http://fonts.googleapis.com/css?family=Monda:400,700|Source+Code+Pro' rel='stylesheet' type='text/css'>
   <style>
     body { overflow: hidden; background: #fec353; font-family: Monda; font-size: 24px; }
+    #sects { position: absolute; top: 0; right: 0; bottom: 0; left: 50px; }
     section { position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: auto; margin: 16px; padding: 15px; background: #f2f2f2; border: 4px solid #000; text-align: center; }
-    h1 { -webkit-text-stroke: 2px black; color: #fec353; font-size: 96px; margin: -10px 0; }
+    section h1 { -webkit-text-stroke: 2px black; color: #fec353; font-size: 96px; margin: -10px 0; }
+    #leftbar { position: absolute; left: 0; width: 50px; top: 0; bottom: 0; }
+    #leftbar>h1 { position: absolute; bottom: -90px; -webkit-transform-origin: -10px 0; -webkit-transform: rotate(-90deg); }
+    #leftbar>#tv { -webkit-transform-origin: 100% 50%; -webkit-transform: rotate(-90deg); width: 500px; text-align: right; right: 15px; position: absolute; top: 0; }
     ul { list-style: none; padding: 0; }
     #tvid-form p { margin: 5px; font-size: 36px; }
     #tvid-form input { font-size: 36px; font-family: 'Source Code Pro', fixed; border: 2px solid #000; text-align: center; }
@@ -15,6 +19,7 @@
     #loading { text-align: center; margin-top: -40px; position: relative; top: 50%; font-size: 62px; }
     #activity-list li { display: inline-block; margin: 8px 5px; }
     #activity-list button { height: 125px; }
+    #tvid { font-family: 'Source Code Pro', fixed; }
 
     button { display: inline-block; cursor: hand; padding: 0; border: 0; background: none; position: relative; width: 200px; height: 75px; }
     button:after { display: block; position: absolute; bottom: 0; left: 0; right: 0; height: 25px; background: #ba903e; content: ''; z-index: 2; border-radius: 0 0 11px 11px; border: 4px solid #000; border-radius: 0 0 15px 15px; }
@@ -27,64 +32,71 @@
   </style>
 </head>
 <body>
+  <header id="leftbar">
+    <h1>castify.me</h1>
+    <div id="tv" style="display: none;"><span id="tvname"></span> - <span id="tvid"></span></div>
+  </header>
+  
   <div id="loading">loading...</div>
   
-  <section id="connect">
-    <h1>castify.me</h1>
+  <div id="sects">
+    <section id="connect">
+      <h1>connect to tv</h1>
+      
+      <ul id="receiver-list"></ul>
+      
+      <form id="tvid-form">
+        <p><label>tv id:</label></p>
+        <p><input type="text" size="8" maxlength="8"></p>
+        <p><button><span>connect</span></button></p>
+      </form>
+    </section>
     
-    <ul id="receiver-list"></ul>
+    <section id="home" style="display: none;">
+      <h1>activities</h1>
+      
+      <ul id="activity-list">
+        <li><button class="tall" data-activity="stream"><div></div><span>stream</span></button></li>
+        <li><button class="tall" data-activity="pong"><div></div><span>pong</span></button></li>
+        <li><button class="tall" data-activity="tetris"><div></div><span>tetris</span></button></li>
+        <li><button class="tall" data-activity="scrabble"><div></div><span>scrabble</span></button></li>
+        <li><button class="tall" data-activity="webcam"><div></div><span>webcam</span></button></li>
+        <li><button class="tall" data-activity="clock"><div></div><span>clock</span></button></li>
+        <li><button class="tall" data-activity="weather"><div></div><span>weather</span></button></li>
+        <li><button class="tall" data-activity="finance"><div></div><span>finance</span></button></li>
+        <li><button class="tall" data-activity="present"><div></div><span>present</span></button></li>
+        <li><button class="tall" data-activity="beam"><div></div><span>beam</span></button></li>
+        <li><button class="tall" data-activity="cards"><div></div><span>cards</span></button></li>
+        <li><button class="tall" data-activity="books"><div></div><span>books</span></button></li>
+      </ul>
+    </section>
     
-    <form id="tvid-form">
-      <p><label>tv id:</label></p>
-      <p><input type="text" size="8" maxlength="8"></p>
-      <p><button><span>connect</span></button></p>
-    </form>
-  </section>
-  
-  <section id="home" style="display: none;">
-    <h1>activities</h1>
+    <section id="act-stream" style="display: none;">
+      <h1>stream video</h1>
+      
+      <video></video>
+      
+      <form id="stream-form">
+        <p><label>url:</label></p>
+        <p><input type="text"></p>
+        <p><button><span>play</span></button></p>
+      </form>
+    </section>
     
-    <ul id="activity-list">
-      <li><button class="tall" data-activity="stream"><div></div><span>stream</span></button></li>
-      <li><button class="tall" data-activity="pong"><div></div><span>pong</span></button></li>
-      <li><button class="tall" data-activity="tetris"><div></div><span>tetris</span></button></li>
-      <li><button class="tall" data-activity="scrabble"><div></div><span>scrabble</span></button></li>
-      <li><button class="tall" data-activity="webcam"><div></div><span>webcam</span></button></li>
-      <li><button class="tall" data-activity="clock"><div></div><span>clock</span></button></li>
-      <li><button class="tall" data-activity="weather"><div></div><span>weather</span></button></li>
-      <li><button class="tall" data-activity="finance"><div></div><span>finance</span></button></li>
-      <li><button class="tall" data-activity="present"><div></div><span>present</span></button></li>
-      <li><button class="tall" data-activity="beam"><div></div><span>beam</span></button></li>
-      <li><button class="tall" data-activity="cards"><div></div><span>cards</span></button></li>
-      <li><button class="tall" data-activity="books"><div></div><span>books</span></button></li>
-    </ul>
-  </section>
-  
-  <section id="act-stream" style="display: none;">
-    <h1>stream video</h1>
+    <section id="act-pong-lobby" style="display: none;">
+      <h1>castify pong</h1>
+      
+      <p><button data-idx="0"><span>play red</span></button></p>
+      <p><button data-idx="1"><span>play blue</span></button></p>
+    </section>
     
-    <video></video>
-    
-    <form id="stream-form">
-      <p><label>url:</label></p>
-      <p><input type="text"></p>
-      <p><button><span>play</span></button></p>
-    </form>
-  </section>
-  
-  <section id="act-pong-lobby" style="display: none;">
-    <h1>castify pong</h1>
-    
-    <p><button data-idx="0"><span>play red</span></button></p>
-    <p><button data-idx="1"><span>play blue</span></button></p>
-  </section>
-  
-  <section id="act-pong-game" style="display: none;">
-    <h1>play pong</h1>
-    
-    <p><button data-key="w"><span>up (w)</span></button></p>
-    <p><button data-key="s"><span>down (s)</span></button></p>
-  </section>
+    <section id="act-pong-game" style="display: none;">
+      <h1>play pong</h1>
+      
+      <p><button data-key="w"><span>up (w)</span></button></p>
+      <p><button data-key="s"><span>down (s)</span></button></p>
+    </section>
+  </div>
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -136,7 +148,7 @@
       mReceiver = receiver;
       var request = new cast.LaunchRequest('f2889f47-f852-45c0-bed0-010cbf577c0b', receiver);
       cast_api.launch(request, onLaunch);
-      $('#connect').animate({left: '-100%', right: '100%'});
+      $('#connect').animate({left: '-125%', right: '125%'});
       $('#loading').text('launching...');
     };
     
@@ -172,15 +184,19 @@
         tvconn.send({type: 'ping', ts: +new Date()});
       }, 10000);
       showHome(true);
+      
+      $('#tv').show();
+      $('#tvid').text(tvconn.peer);
     });
     
     if ($('#connect').css('left') == '0px') {
-      $('#connect').animate({left: '-100%', right: '100%'});
+      $('#connect').animate({left: '-125%', right: '125%'});
       $('#loading').text('connecting...');
     };
   };
   
   function onTvData (data) {
+    console.log('TV', '>>>', data);
     if (data.type == 'launch') {
       if (data.activity == 'pong') {
         startPong();
@@ -189,6 +205,8 @@
       } else {
         console.log('Launching unknown activity', data.activity);
       };
+    } else if (data.type == 'banner') {
+      $('#tvname').text(data.name || 'castify TV');
     } else if (data.cmd == 'state' && data.item) {
       $('#act-stream video')[0].src = data.item.src;
     } else if (data.type == 'pong' && data.ts) {
@@ -204,7 +222,7 @@
   
   function startPong () {
     if ($('#home').css('left') == '0px') {
-      $('#home').animate({left: '-100%', right: '100%'});
+      $('#home').animate({left: '-125%', right: '125%'});
       $('#loading').text('waiting...');
     };
     
@@ -221,7 +239,7 @@
   }
   
   function playPong () {
-    $('#act-pong-lobby').animate({left: '-100%', right: '100%'});
+    $('#act-pong-lobby').animate({left: '-125%', right: '125%'});
     $('#act-pong-game').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
     
     $('body').keydown(function (e) {
@@ -251,7 +269,7 @@
       var activity = $(e.currentTarget).data('activity');
       tvconn.send({type: 'launch', activity: activity});
       
-      $('#home').animate({left: '-100%', right: '100%'});
+      $('#home').animate({left: '-125%', right: '125%'});
       $('#loading').text('waiting...');
     });
     
