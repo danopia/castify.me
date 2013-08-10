@@ -52,6 +52,8 @@
   };
 })();
 
+// TV Connection
+//////////////////
 
 $('#tvid-form').submit(function (e) {
   e.preventDefault();
@@ -83,33 +85,24 @@ function connectToTv (id) {
   };
 };
 
+// Activity Loading
+/////////////////////
+
 var activity;
 function onTvData (data) {
   console.log('TV', '>>>', data);
   if (data.type == 'launch') {
-    if (activity) {
-      activity.close();
-      activity = null;
-    };
+    if (activity) activity.close();
+    activity = null;
     
     getAct(data.activity, function (act) {
       activity = new act(data);
       activity.launch();
     });
-  /*
-    if (data.activity == 'pong') {
-      startPong();
-    } else if (data.activity == 'stream') {
-      $('#act-stream').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
-    } else {
-      console.log('Launching unknown activity', data.activity);
-    };*/
   } else if (data.type == 'activity' && activity && 'onData' in activity) {
     activity.onData(data);
   } else if (data.type == 'banner') {
     $('#tvname').text(data.name || 'castify TV');
-  } else if (data.cmd == 'state' && data.item) {
-    $('#act-stream video')[0].src = data.item.src;
   } else if (data.type == 'pong' && data.ts) {
     console.log('Ping:', new Date() - data.ts + 'ms');
   } else {
