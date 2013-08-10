@@ -120,9 +120,11 @@ $(function () {
 // Activity Loading
 /////////////////////
 
-window.activities = {};
-var cbs = {};
-function actLoaded (act) {
+var activities = {}, cbs = {};
+function actLoaded (act, prototype) {
+  activities[act] = new Function('this.initialize.apply(this, arguments);');
+  activities[act].prototype = prototype;
+  
   if (act in cbs) {
     cbs[act](activities[act]);
     delete cbs[act];
