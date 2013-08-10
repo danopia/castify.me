@@ -1,5 +1,6 @@
-var app = require('http').createServer(handler)
-  , fs = require('fs')
+
+// PeerJS
+///////////
 
 var PeerServer = require('peer').PeerServer;
 PeerServer.prototype._generateClientId = function(key) {
@@ -14,20 +15,27 @@ PeerServer.prototype._generateClientId = function(key) {
 };
 var peerServer = new PeerServer({port: 9000, debug: true});
 
-app.listen(80);
+// Express
+////////////
 
-function handler (req, res) {
+var express = require('express'),
+    app = express(),
+    server = require('http').createServer(app);
+//    io = require('socket.io').listen(server);
+
+server.listen(80);
+
+app.use(function(req, res, next){
   console.log(req.method, req.url);
-  
-  fs.readFile(__dirname + '/' + (req.url == '/receiver' ? 'receiver' : 'index') + '.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-      return res.end('Error loading html file');
-    }
+  next();
+});
 
-    res.writeHead(200);
-    res.end(data);
-  });
-}
+app.use(express.static(__dirname + '/public'));
+
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/public/index.html');
+});
+app.get('/receiver', function (req, res) {
+  res.sendfile(__dirname + '/public/receiver.html');
+});
 
