@@ -84,16 +84,23 @@ function connectToTv (id) {
   };
 };
 
+var activity;
 function onTvData (data) {
   console.log('TV', '>>>', data);
   if (data.type == 'launch') {
+    getAct(data.activity, function (act) {
+      activity = new act(data);
+    });
+  /*
     if (data.activity == 'pong') {
       startPong();
     } else if (data.activity == 'stream') {
       $('#act-stream').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
     } else {
       console.log('Launching unknown activity', data.activity);
-    };
+    };*/
+  } else if (data.type == 'activity' && activity && 'onData' in activity) {
+    activity.onData(data);
   } else if (data.type == 'banner') {
     $('#tvname').text(data.name || 'castify TV');
   } else if (data.cmd == 'state' && data.item) {
@@ -107,49 +114,6 @@ function onTvData (data) {
 
 function showHome (firstTime) {
   $('#home').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
-};
-
-function startPong () {
-  if ($('#home').css('left') == '0px') {
-    $('#home').animate({left: '-125%', right: '125%'});
-    $('#loading').text('waiting...');
-  };
-  
-  $('#act-pong-lobby').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
-  
-  $('#act-pong-lobby [data-idx=0]').click(function (e) {
-    tvconn.send({type: 'activity', cmd: 'join', player: 0});
-    playPong();
-  });
-  $('#act-pong-lobby [data-idx=1]').click(function (e) {
-    tvconn.send({type: 'activity', cmd: 'join', player: 1});
-    playPong();
-  });
-}
-
-function playPong () {
-  $('#act-pong-lobby').animate({left: '-125%', right: '125%'});
-  $('#act-pong-game').css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
-  
-  $('body').keydown(function (e) {
-    if (e.keyCode == 87) {
-      $('[data-key=w]').addClass('pressed');
-      tvconn.send({type: 'activity', cmd: 'delta', delta: -1000});
-    } else if (e.keyCode == 83) {
-      $('[data-key=s]').addClass('pressed');
-      tvconn.send({type: 'activity', cmd: 'delta', delta: 1000});
-    };
-  });
-  
-  $('body').keyup(function (e) {
-    if (e.keyCode == 87) {
-      $('[data-key=w]').removeClass('pressed');
-      tvconn.send({type: 'activity', cmd: 'delta', delta: 0});
-    } else if (e.keyCode == 83) {
-      $('[data-key=s]').removeClass('pressed');
-      tvconn.send({type: 'activity', cmd: 'delta', delta: 0});
-    }
-  });
 };
 
 $(function () {
@@ -170,6 +134,76 @@ $(function () {
     tvconn.send({type: 'activity', cmd: 'queueAdd', item: {src: src}});
   });
 });
+
+window.activities = {};
+var cbs = {};
+function actLoaded (act) {
+  if (act in cbs) {
+    cbs[act](activities[act]);
+    delete cbs[act];
+  };
+};
+function getAct (act, cb) {
+  if (act in activities) {
+    cb(activities[act]);
+  } else {
+    cbs[act] = cb;
+    $('[data-script]').after($('<script async>').attr('src', 'js/activity-' + act + '.js'));
+  };
+};
+
+// Lobby
+//////////
+
+var Lobby = window.Lobby = function (activity, seats) {
+  this.$dom = $('<section>');
+  this.$h1 = $('<h1>', {text: activity + ' lobby'});
+  this.$ul = $('<ul>');
+  this.$dom.append(this.$h1, this.$ul);
+  
+  this.setSeats(seats || []);
+  this.$ul.on('click', 'button', this.onClick.bind(this));
+};
+
+Lobby.prototype.setSeats = function (seats) {
+  this.seats = seats;
+  this.$ul.empty();
+  
+  for (var key in seats) {
+    var $li = $('<li><button><span></span></button></li>');
+    $li.find('button').data('seat', key);
+    $li.find('span').text('play ' + seats[key].label);
+    
+    if (seats[key].peer)
+      $li.find('button').addClass('disabled');
+    
+    this.$ul.append($li);
+  };
+};
+
+Lobby.prototype.onClick = function (e) {
+  e.preventDefault();
+  
+  var $btn = $(e.currentTarget);
+  var seat = +$btn.data('seat');
+  
+  if (!this.seats[seat].peer)
+    this.onPick(seat);
+};
+
+Lobby.prototype.show = function () {
+  if (this.$dom.is(":visible")) return;
+  
+  $('#sects').append(this.$dom);
+  this.$dom.css({left: '100%', right: '-100%'}).show().animate({left: 0, right: 0});
+};
+
+Lobby.prototype.hide = function () {
+  this.$dom.animate({left: '-125%', right: '125%'}, function () {
+    this.$dom.detach();
+  }.bind(this));
+};
+
 
 /*
 $killSwitch.on('click', function() {

@@ -140,7 +140,7 @@ activities.pong.prototype.initialize = function () {
   this.running = false;
   
   this.conns = {};
-  this.seats = {0: null, 1: null};
+  this.seats = [{label: 'red'}, {label: 'blue'}];
   this.score = ['waiting', 'waiting'];
   this.pos = [200, 200];
   this.dlt = [0, 0];
@@ -168,14 +168,14 @@ activities.pong.prototype.launch = function () {
   this.onStep(0);
 };
 activities.pong.prototype.onStep = function (timeDelta) {
-  if (this.seats[0]) {
+  if (this.seats[0].peer) {
     this.pos[0] += this.dlt[0] * timeDelta;
     if (this.pos[0] < 100) this.pos[0] = 100;
     if (this.pos[0] > $('body').height() - 100) this.pos[0] = $('body').height() - 100;
     this.$paddleL.css('top', this.pos[0]);
   };
   
-  if (this.seats[1]) {
+  if (this.seats[1].peer) {
     this.pos[1] += this.dlt[1] * timeDelta;
     if (this.pos[1] < 100) this.pos[1] = 100;
     if (this.pos[1] > $('body').height() - 100) this.pos[1] = $('body').height() - 100;
@@ -191,7 +191,7 @@ activities.pong.prototype.onStep = function (timeDelta) {
   this.ballPos[1] += this.ballDlt[1] * timeDelta;
   
   if (this.ballPos[0] < 75) {
-    if (!this.seats[0]) {
+    if (!this.seats[0].peer) {
       this.ballDlt[0] *= -1;
       this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
     } else if (this.pos[0] + 100 > this.ballPos[1] + 25 && this.pos[0] - 100 < this.ballPos[1] + 25) {
@@ -212,7 +212,7 @@ activities.pong.prototype.onStep = function (timeDelta) {
   };
   
   if (this.ballPos[0] > $('body').width() - 75 - 50) {
-    if (!this.seats[1]) {
+    if (!this.seats[1].peer) {
       this.ballDlt[0] *= -1;
       this.ballPos[0] += (2 * this.ballDlt[0] * timeDelta);
     } else if (this.pos[1] + 100 > this.ballPos[1] + 25 && this.pos[1] - 100 < this.ballPos[1] + 25) {
@@ -258,20 +258,21 @@ activities.pong.prototype.onConnection = function (conn) {
     conn.send({type: 'activity', cmd: 'lobby', seats: this.seats});
 };
 activities.pong.prototype.onData = function (conn, data) {
-  if (data.cmd == 'join' && this.inLobby && !this.seats[data.player] && !this.conns[conn.getPeer()]) {
-    this.seats[data.player] = conn.getPeer();
-    this.conns[conn.getPeer()] = data.player;
-    this.score[data.player] = 0;
+  if (data.cmd == 'join' && this.inLobby && !this.seats[data.seat].peer && !this.conns[conn.getPeer()]) {
+    this.seats[data.seat].peer = conn.getPeer();
+    this.conns[conn.getPeer()] = data.seat;
+    this.score[data.seat] = 0;
     this.invalidate();
     
-    if (data.player)
+    if (data.seat)
       this.$paddleR.removeClass('idk');
     else
       this.$paddleL.removeClass('idk');
     
     broadcast({type: 'activity', cmd: 'lobby', seats: this.seats});
+    conn.send({type: 'activity', cmd: 'join', seat: data.seat});
     
-    //if (this.seats[0] && this.seats[1])
+    //if (this.seats[0].peer && this.seats[1].peer)
       this.start();
   } else if (data.cmd == 'delta' && conn.getPeer() in this.conns) {
     var seat = this.conns[conn.getPeer()];
