@@ -9,12 +9,12 @@
   // Cast SDK junk
   var receiver, channelHandler, name;
   (function () {
-	  receiver = new cast.receiver.Receiver('f2889f47-f852-45c0-bed0-010cbf577c0b', [cast.receiver.RemoteMedia.NAMESPACE, 'castify'], '', 5);
-	  channelHandler = new cast.receiver.ChannelHandler('castify');
-	  //var remoteMedia = new cast.receiver.RemoteMedia();
-	  channelHandler.addChannelFactory(receiver.createChannelFactory('castify'));
-	  receiver.start();
-	
+    receiver = new cast.receiver.Receiver('f2889f47-f852-45c0-bed0-010cbf577c0b', [cast.receiver.RemoteMedia.NAMESPACE, 'castify'], '', 5);
+    channelHandler = new cast.receiver.ChannelHandler('castify');
+    //var remoteMedia = new cast.receiver.RemoteMedia();
+    channelHandler.addChannelFactory(receiver.createChannelFactory('castify'));
+    receiver.start();
+  
     channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, function (event) {
       if ('name' in event.message) {
         name = event.message.name;
@@ -30,33 +30,33 @@
   })();
   
   
-	var peer = new Peer({host: 'cast.danopia.net', port: 9000});
+  var peer = new Peer({host: 'cast.danopia.net', port: 9000});
   
   peer.on('open', function () {
-	  $('.tvid span').text(peer.id);
-	  $('.tvid').show().animate({opacity: 0.75}).css('margin-left', -($('.tvid').width() + 40)/2);
-	  
+    $('.tvid span').text(peer.id);
+    $('.tvid').show().animate({opacity: 0.75}).css('margin-left', -($('.tvid').width() + 40)/2);
+    
     channelHandler.getChannels().forEach(function (channel) {
       channel.send({id: peer.id});
     });
-	});
-	
-	function broadcast (pkt) {
-	  for (var key in peer.connections)
-	    peer.connections[key].peerjs.send(pkt);
-	};
-	
-	var activity;
+  });
+  
+  function broadcast (pkt) {
+    for (var key in peer.connections)
+      peer.connections[key].peerjs.send(pkt);
+  };
+  
+  var activity;
   
   var lastStep = new Date();
-	setInterval(function () {
-	  var now = new Date(), delta = now - lastStep;
-	  lastStep = now;
-	  
-	  if (activity && 'onStep' in activity)
-	    activity.onStep(delta / 1000);
-	}, 1/120);
-	
+  setInterval(function () {
+    var now = new Date(), delta = now - lastStep;
+    lastStep = now;
+    
+    if (activity && 'onStep' in activity)
+      activity.onStep(delta / 1000);
+  }, 1/120);
+  
   peer.on('connection', function(conn) {
     conn.on('open', function () {
       conn.send({type: 'banner', name: name});
@@ -295,7 +295,7 @@
   <div id="b1" class="ball"   style="left: 200px; top: 100px;"></div>
   -->
   
-	<script>
+  <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
